@@ -22,7 +22,7 @@ const FONT_MAP = {
   mono: '"JetBrains Mono", monospace'
 };
 
-// Markdown parser with indexed task checkboxes
+// Markdown parser with highlights and tasks
 function parseMarkdown(md) {
   let taskIndex = 0;
 
@@ -36,6 +36,11 @@ function parseMarkdown(md) {
     .replace(/^# (.*$)/gim, "<h1>$1</h1>")
     // Blockquote
     .replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>")
+    // Priority Highlights (High: ==text==, Med: ~text~, Low: +text+, Info: *text*)
+    .replace(/==(.*?)==/gim, '<span class="hl-high">$1</span>')
+    .replace(/~(.*?)~/gim, '<span class="hl-med">$1</span>')
+    .replace(/\+(.*?)\+/gim, '<span class="hl-low">$1</span>')
+    .replace(/\*(.*?)\*/gim, '<span class="hl-info">$1</span>')
     // Interactive Task Checkboxes: - [ ] and - [x]
     .replace(/^\s*[\-\*]\s+\[ \]\s+(.*)$/gim, (_, content) => {
       const idx = taskIndex++;
@@ -47,9 +52,8 @@ function parseMarkdown(md) {
     })
     // Standard unordered lists
     .replace(/^\s*[\-\*]\s+(.*)$/gim, "<li>$1</li>")
-    // Bold & Italics
+    // Bold
     .replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/gim, "<em>$1</em>")
     // Inline code
     .replace(/`(.*?)`/gim, "<code>$1</code>")
     // Links [text](url)
@@ -63,7 +67,34 @@ function parseMarkdown(md) {
   return html;
 }
 
-// Toggle task item state in the raw textarea string
+// Wrapper for highlighter buttons
+function wrapHighlight(tagType) {
+  if (isPreviewMode) return;
+
+  const tagMap = {
+    high: { open: "==", close: "==" },
+    med: { open: "~", close: "~" },
+    low: { open: "+", close: "+" },
+    info: { open: "*", close: "*" }
+  };
+
+  const tag = tagMap[tagType] || tagMap.high;
+  const start = noteArea.selectionStart;
+  const end = noteArea.selectionEnd;
+  const original = noteArea.value;
+  const selectedText = original.substring(start, end) || "Important Note";
+
+  const wrapped = `${tag.open}${selectedText}${tag.close}`;
+  noteArea.value = original.substring(0, start) + wrapped + original.substring(end);
+
+  const newPos = start + wrapped.length;
+  noteArea.setSelectionRange(newPos, newPos);
+  noteArea.focus();
+
+  updateCount();
+  saveNote();
+}
+
 function toggleTaskState(taskIndex, isChecked) {
   let currentIdx = 0;
   const taskRegex = /^(\s*[\-\*]\s+\[)([ xX])(\]\s+.*)$/gm;
@@ -203,13 +234,19 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
   }
 });
 
+// Event Delegation for Highlighter Buttons
+document.querySelectorAll(".color-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    wrapHighlight(btn.getAttribute("data-tag"));
+  });
+});
+
 // Handle checkbox clicks inside preview area
 previewArea.addEventListener("change", (e) => {
   if (e.target.classList.contains("task-checkbox")) {
     const taskIndex = parseInt(e.target.getAttribute("data-task-index"), 10);
     const isChecked = e.target.checked;
     
-    // Toggle strikethrough class on parent li
     const parentLi = e.target.closest("li");
     if (parentLi) {
       parentLi.classList.toggle("completed", isChecked);

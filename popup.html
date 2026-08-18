@@ -22,6 +22,16 @@
       /* Dynamic Typography Variables */
       --active-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --active-font-size: 13px;
+
+      /* Highlight Colors (Light) */
+      --hl-high-bg: #fee2e2;
+      --hl-high-text: #b91c1c;
+      --hl-med-bg: #fef3c7;
+      --hl-med-text: #b45309;
+      --hl-low-bg: #dcfce7;
+      --hl-low-text: #15803d;
+      --hl-info-bg: #e0f2fe;
+      --hl-info-text: #0369a1;
     }
 
     [data-theme="dark"] {
@@ -33,6 +43,16 @@
       --accent: #60a5fa;
       --btn-hover: #334155;
       --code-bg: #334155;
+
+      /* Highlight Colors (Dark) */
+      --hl-high-bg: #7f1d1d;
+      --hl-high-text: #fecaca;
+      --hl-med-bg: #78350f;
+      --hl-med-text: #fde68a;
+      --hl-low-bg: #14532d;
+      --hl-low-text: #bbf7d0;
+      --hl-info-bg: #0c4a6e;
+      --hl-info-text: #bae6fd;
     }
 
     [data-theme="sepia"] {
@@ -44,6 +64,16 @@
       --accent: #b45309;
       --btn-hover: #e8dbbe;
       --code-bg: #e2d2b5;
+
+      /* Highlight Colors (Sepia) */
+      --hl-high-bg: #f5d0c5;
+      --hl-high-text: #8c1d18;
+      --hl-med-bg: #fae4b8;
+      --hl-med-text: #854d0e;
+      --hl-low-bg: #dbe8cb;
+      --hl-low-text: #2d5a1e;
+      --hl-info-bg: #d4e5ee;
+      --hl-info-text: #1e4b6e;
     }
 
     [data-theme="nord"] {
@@ -55,6 +85,16 @@
       --accent: #88c0d0;
       --btn-hover: #434c5e;
       --code-bg: #434c5e;
+
+      /* Highlight Colors (Nord) */
+      --hl-high-bg: #bf616a44;
+      --hl-high-text: #bf616a;
+      --hl-med-bg: #ebcb8b44;
+      --hl-med-text: #ebcb8b;
+      --hl-low-bg: #a3be8c44;
+      --hl-low-text: #a3be8c;
+      --hl-info-bg: #81a1c144;
+      --hl-info-text: #88c0d0;
     }
 
     * {
@@ -64,7 +104,7 @@
     }
 
     body {
-      width: 410px;
+      width: 420px;
       padding: 14px;
       background-color: var(--bg);
       color: var(--text);
@@ -99,13 +139,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       gap: 5px;
     }
 
     .toolbar-group {
       display: flex;
-      gap: 5px;
+      gap: 4px;
       align-items: center;
     }
 
@@ -133,10 +173,27 @@
       border-color: var(--accent);
     }
 
+    /* Highlighter Dots */
+    .color-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+    .color-btn.high { background-color: #ef4444; }
+    .color-btn.med { background-color: #f59e0b; }
+    .color-btn.low { background-color: #10b981; }
+    .color-btn.info { background-color: #3b82f6; }
+
     .view-area {
       position: relative;
       width: 100%;
-      height: 230px;
+      height: 220px;
     }
 
     textarea, #previewArea {
@@ -174,7 +231,40 @@
     #previewArea blockquote { border-left: 3px solid var(--accent); padding-left: 8px; margin: 6px 0; color: var(--text-muted); font-style: italic; }
     #previewArea a { color: var(--accent); text-decoration: underline; }
 
-    /* Interactive Task List Styling */
+    /* Importance Highlights */
+    .hl-high {
+      background-color: var(--hl-high-bg);
+      color: var(--hl-high-text);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .hl-med {
+      background-color: var(--hl-med-bg);
+      color: var(--hl-med-text);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .hl-low {
+      background-color: var(--hl-low-bg);
+      color: var(--hl-low-text);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .hl-info {
+      background-color: var(--hl-info-bg);
+      color: var(--hl-info-text);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Task Items */
     #previewArea li.task-item {
       list-style-type: none;
       margin-left: -18px;
@@ -221,7 +311,7 @@
     </select>
   </header>
 
-  <!-- Typography Toolbar -->
+  <!-- Row 1: Font Family and Sizes -->
   <div class="toolbar-row">
     <div class="toolbar-group">
       <select id="fontSelect" title="Font Family">
@@ -246,8 +336,22 @@
     </div>
   </div>
 
+  <!-- Row 2: Priority & Highlighter Quick Bar -->
+  <div class="toolbar-row" style="margin-bottom: 8px;">
+    <div class="toolbar-group">
+      <span style="font-size: 10px; color: var(--text-muted); margin-right: 2px;">Highlight:</span>
+      <button class="color-btn high" data-tag="high" title="High Priority / Urgent (==text==)"></button>
+      <button class="color-btn med" data-tag="med" title="Medium Priority (~text~)"></button>
+      <button class="color-btn low" data-tag="low" title="Low Priority / Done (+text+)"></button>
+      <button class="color-btn info" data-tag="info" title="Info / Note (*text*)"></button>
+    </div>
+    <div class="toolbar-group">
+      <span style="font-size: 10px; color: var(--text-muted);">Format: <code>==Urgent==</code></span>
+    </div>
+  </div>
+
   <div class="view-area">
-    <textarea id="noteArea" placeholder="Type notes or tasks here...&#10;- [ ] Unfinished task&#10;- [x] Completed task"></textarea>
+    <textarea id="noteArea" placeholder="Type notes here...&#10;==Urgent Task==&#10;~Medium Priority~&#10;+Completed/Low Priority+&#10;*Important Note*"></textarea>
     <div id="previewArea"></div>
   </div>
 
