@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Quick Notes Pro",
+  "version": "2.1",
+  "description": "Lightweight scratchpad with Markdown preview, themes, context menu clipping, and autosave.",
+  "permissions": [
+    "storage",
+    "contextMenus"
+  ],
+  "background": {
+    "service_worker": "bg.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Quick Notes"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+U",
+        "mac": "Command+Shift+U"
+      },
+      "description": "Open Quick Notes popup"
+    }
+  }
+}

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quick Notes Pro</title>
+  <!-- Google Fonts: Roboto, Merriweather, JetBrains Mono, Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Merriweather:wght@300;400;700&family=Nunito:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --accent: #3b82f6;
+      --btn-hover: #f1f5f9;
+      --code-bg: #e2e8f0;
+      
+      /* Dynamic Typography Variables */
+      --active-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --active-font-size: 13px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #60a5fa;
+      --btn-hover: #334155;
+      --code-bg: #334155;
+    }
+
+    [data-theme="sepia"] {
+      --bg: #fbf0d9;
+      --card-bg: #f4ecd8;
+      --text: #433422;
+      --text-muted: #8f7760;
+      --border: #d8c7a9;
+      --accent: #b45309;
+      --btn-hover: #e8dbbe;
+      --code-bg: #e2d2b5;
+    }
+
+    [data-theme="nord"] {
+      --bg: #2e3440;
+      --card-bg: #3b4252;
+      --text: #eceff4;
+      --text-muted: #d8dee9;
+      --border: #4c566a;
+      --accent: #88c0d0;
+      --btn-hover: #434c5e;
+      --code-bg: #434c5e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 410px;
+      padding: 14px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    #status {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .toolbar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 5px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    select, button {
+      padding: 4px 6px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background-color: var(--card-bg);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.15s ease;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    select:hover, button:hover {
+      background-color: var(--btn-hover);
+    }
+
+    button.active {
+      background-color: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .view-area {
+      position: relative;
+      width: 100%;
+      height: 230px;
+    }
+
+    textarea, #previewArea {
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card-bg);
+      color: var(--text);
+      font-family: var(--active-font);
+      font-size: var(--active-font-size);
+      line-height: 1.55;
+      resize: none;
+      outline: none;
+      overflow-y: auto;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    #previewArea {
+      display: none;
+    }
+
+    /* Markdown Render Styling */
+    #previewArea h1 { font-size: 1.4em; margin: 4px 0 8px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    #previewArea h2 { font-size: 1.2em; margin: 4px 0 6px 0; }
+    #previewArea h3 { font-size: 1.05em; margin: 4px 0 4px 0; }
+    #previewArea p { margin-bottom: 8px; }
+    #previewArea ul { margin-left: 18px; margin-bottom: 8px; }
+    #previewArea li { margin-bottom: 3px; }
+    #previewArea code { background: var(--code-bg); padding: 2px 4px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; }
+    #previewArea blockquote { border-left: 3px solid var(--accent); padding-left: 8px; margin: 6px 0; color: var(--text-muted); font-style: italic; }
+    #previewArea a { color: var(--accent); text-decoration: underline; }
+
+    /* Interactive Task List Styling */
+    #previewArea li.task-item {
+      list-style-type: none;
+      margin-left: -18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    #previewArea input[type="checkbox"].task-checkbox {
+      margin-top: 4px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    #previewArea li.task-item.completed {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 5px;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <div class="header-left">
+      <h1>Quick Notes</h1>
+      <span id="status">Saved</span>
+    </div>
+    <select id="themeSelect" title="Select Theme">
+      <option value="light">☀️ Light</option>
+      <option value="dark">🌙 Dark</option>
+      <option value="sepia">📜 Sepia</option>
+      <option value="nord">❄️ Nord</option>
+    </select>
+  </header>
+
+  <!-- Typography Toolbar -->
+  <div class="toolbar-row">
+    <div class="toolbar-group">
+      <select id="fontSelect" title="Font Family">
+        <option value="system">Sans (System UI)</option>
+        <option value="roboto">Roboto (Clean)</option>
+        <option value="merriweather">Merriweather (Serif)</option>
+        <option value="nunito">Nunito (Rounded)</option>
+        <option value="mono">JetBrains Mono (Code)</option>
+      </select>
+
+      <select id="fontSizeSelect" title="Font Size">
+        <option value="11px">Small (11px)</option>
+        <option value="13px" selected>Normal (13px)</option>
+        <option value="15px">Large (15px)</option>
+        <option value="17px">Huge (17px)</option>
+      </select>
+    </div>
+
+    <div class="toolbar-group">
+      <button id="toggleMarkdownBtn">👁️ Preview</button>
+      <button id="timestampBtn" title="Insert Timestamp (Ctrl+Shift+D)">🕒 Log</button>
+    </div>
+  </div>
+
+  <div class="view-area">
+    <textarea id="noteArea" placeholder="Type notes or tasks here...&#10;- [ ] Unfinished task&#10;- [x] Completed task"></textarea>
+    <div id="previewArea"></div>
+  </div>
+
+  <div class="actions">
+    <span id="charCount" style="font-size: 11px; color: var(--text-muted);">0 characters</span>
+    <div class="btn-group">
+      <button id="exportBtn" title="Download note as .md file">⬇️ Export .md</button>
+      <button id="copyBtn">Copy</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
